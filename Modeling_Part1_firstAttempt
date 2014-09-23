@@ -1,0 +1,41 @@
+%Evgeniy Vinogradov
+%total simulation time=100ms
+%Constants
+t=[1:100]
+
+Gk=36;%ms/cm2
+Gna=120;%ms/cm2
+Gl=.3;%ms/cm2
+Ek=-12;%mV
+Ena=115;%mV
+El=10.6;%mV
+Vrest=-70;%mV
+%Equations:
+
+%Gating Variables
+% Alpham=.1*((25-Vm)/(exp((25-Vm)/10)-1));
+% Betam=4*exp(-Vm/18);
+% Alphan=.1*((10-Vm)/(exp((10-Vm)/10)-1));
+% Betan=.125*exp(-Vm/80);
+% Alphah=.07*exp(-Vm/20);
+% Betah=1/(exp((30-Vm)/10)+1);
+% 
+% %Currents
+% Ina=m^(3)*Gna*h*(Vm-Ena);
+% Ik=n^(4)*Gk*(Vm-Ek);
+% Il=Gl*(Vm-El);
+% Iion=I-Ik-Ina-Il;
+% 
+% %Derivatives
+% dVm=Iion/Cm;
+% dm=Alpham*(1-m)-Betam*m;
+% dn=Alphan*(1-n)-Betan*n;
+% dh=Alphah*(1-h)-Betah*h;
+
+%Euler's Method
+
+plot(t,Vrest);
+title('Resting Potential');
+xlabel('ms');
+ylabel('mV');
+
