@@ -51,14 +51,14 @@ Vm=Vm-70;
 
 plot(t,Vm);
 hold on
-title('Resting Potential Part 1');
+title('Membrane Potential Part 1');
 xlabel('ms');
-ylabel('mV');
+ylabel('Voltage(mV)');
 
 figure
 gNa=plot(t,Gna.*(m.^4).*h);
 hold on
-gK=plot(t,Gk.*(n.^3),'g');
+gK=plot(t,Gk.*(n.^3),'r');
 legend([gNa, gK],'Sodium','Potassium')
 ylabel('mS/(cm^2)')
 xlabel('ms')
