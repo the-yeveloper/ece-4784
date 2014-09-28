@@ -54,9 +54,10 @@ Vm=Vm-70;
 
 
 plot(t,Vm);
-title('Resting Potential Part 3');
+hold on
+title('Membrane Potential Part 3');
 xlabel('ms');
-ylabel('mV');
+ylabel('Voltage(mV)');
 
 
 figure
