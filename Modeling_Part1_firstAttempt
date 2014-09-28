@@ -1,7 +1,44 @@
-%Evgeniy Vinogradov
-%total simulation time=100ms
-%Constants
-t=[1:100]
+% %Evgeniy Vinogradov
+% %total simulation time=100ms
+% %Constants
+% t=0:100
+% 
+% Gk=36;%ms/cm2
+% Gna=120;%ms/cm2
+% Gl=.3;%ms/cm2
+% Ek=-12;%mV
+% Ena=115;%mV
+% El=10.6;%mV
+% Vrest=-70;%mV
+% %Equations:
+% Vm=70;
+
+% %Gating Variables
+% Alpham=.1*((25-Vm)/(exp((25-Vm)/10)-1));
+% Betam=4*exp(-Vm/18);
+% Alphan=.1*((10-Vm)/(exp((10-Vm)/10)-1));
+% Betan=.125*exp(-Vm/80);
+% Alphah=.07*exp(-Vm/20);s
+% Betah=1/(exp((30-Vm)/10)+1);
+% 
+% %Currents
+% Ina=m^(3)*Gna*h*(Vm-Ena);
+% Ik=n^(4)*Gk*(Vm-Ek);
+% Il=Gl*(Vm-El);
+% Iion=I-Ik-Ina-Il;
+% %Initial Value
+% m=(Alpham)/(Alpham+Betam);
+% n=(Alphan)/(Alphan+Betan);
+% h=(Alphah)/(Alphah+Betah);
+% %Derivatives
+% dVm=Iion/Cm;
+% dm=Alpham*(1-m)-Betam*m;
+% dn=Alphan*(1-n)-Betan*n;
+% dh=Alphah*(1-h)-Betah*h;
+% 
+% %Euler's Method
+% Vm=Vm+h*dVm;
+
 
 Gk=36;%ms/cm2
 Gna=120;%ms/cm2
@@ -10,32 +47,100 @@ Ek=-12;%mV
 Ena=115;%mV
 El=10.6;%mV
 Vrest=-70;%mV
-%Equations:
+Cm=1;
 
-%Gating Variables
-% Alpham=.1*((25-Vm)/(exp((25-Vm)/10)-1));
-% Betam=4*exp(-Vm/18);
-% Alphan=.1*((10-Vm)/(exp((10-Vm)/10)-1));
-% Betan=.125*exp(-Vm/80);
-% Alphah=.07*exp(-Vm/20);
-% Betah=1/(exp((30-Vm)/10)+1);
-% 
-% %Currents
-% Ina=m^(3)*Gna*h*(Vm-Ena);
-% Ik=n^(4)*Gk*(Vm-Ek);
-% Il=Gl*(Vm-El);
-% Iion=I-Ik-Ina-Il;
-% 
-% %Derivatives
-% dVm=Iion/Cm;
-% dm=Alpham*(1-m)-Betam*m;
-% dn=Alphan*(1-n)-Betan*n;
-% dh=Alphah*(1-h)-Betah*h;
+Vm=[-70];
+v=[];
+h=1;
+I=0;
+i=1;
+for j=1:25:102
+    Alpham=.1*((25-Vm(i))/(exp((25-Vm(i))/10)-1));
+    Betam=4*exp(-Vm(i)/18);
+    Alphan=.01*((10-Vm(i))/(exp((10-Vm(i))/10)-1));
+    Betan=.125*exp(-Vm(i)/80);
+    Alphah=.07*exp(-Vm(i)/20);
+    Betah=1/(exp((30-Vm(i))/10)+1);
+    if i==1
+        m=(Alpham)/(Alpham+Betam);
+        n=(Alphan)/(Alphan+Betan);
+        h=(Alphah)/(Alphah+Betah);
+    end
+    Ina=m^(3)*Gna*h*(Vm(i)-Ena);
+    Ik=n^(4)*Gk*(Vm(i)-Ek);
+    Il=Gl*(Vm(i)-El);
+    Iion=I-Ik-Ina;
+    dVm=Iion/Cm;
+    sprintf('dvm %d',dVm);
+    dm=Alpham*(1-m)-Betam*m;
+    dn=Alphan*(1-n)-Betan*n;
+    dh=Alphah*(1-h)-Betah*h;
+    a=Vm(i);
+    Vm(i+1)=a+25*dVm;
+    m=m+dm;
+    n=n+dn;
+    h=h+dh;
+    i=i+1;
+end
+     
+    
+t=linspace(0,100,6);
 
-%Euler's Method
-
-plot(t,Vrest);
+plot(t,Vm);
 title('Resting Potential');
 xlabel('ms');
 ylabel('mV');
+
+Vm=[-70];
+i=1;
+for j=1:.5:101
+    Alpham=.1*((25-Vm(i))/(exp((25-Vm(i))/10)-1));
+    Betam=4*exp(-Vm(i)/18);
+    Alphan=.01*((10-Vm(i))/(exp((10-Vm(i))/10)-1));
+    Betan=.125*exp(-Vm(i)/80);
+    Alphah=.07*exp(-Vm(i)/20);
+    Betah=1/(exp((30-Vm(i))/10)+1);
+    if i==1
+        m=(Alpham)/(Alpham+Betam);
+        n=(Alphan)/(Alphan+Betan);
+        h=(Alphah)/(Alphah+Betah);
+    end
+    Ina=m^(3)*Gna*h*(Vm(i)-Ena);
+    Ik=n^(4)*Gk*(Vm(i)-Ek);
+    Il=Gl*(Vm(i)-El);
+    if j==1.5
+        I=5;
+    else
+        I=0;
+        
+    end
+    if j<1.5 || j>2.5
+        Il=0;
+    end
+    Iion=I-Ik-Ina-Il;
+    dVm=Iion/Cm;
+    sprintf('dvm %d',dVm);
+    dm=Alpham*(1-m)-Betam*m;
+    dn=Alphan*(1-n)-Betan*n;
+    dh=Alphah*(1-h)-Betah*h;
+    a=Vm(i);
+    Vm(i+1)=a+.5*dVm;
+    m=m+dm;
+    n=n+dn;
+    h=h+dh;
+    i=i+1;
+end
+     
+    
+t=0:.5:100.5;
+
+
+plot(t,Vm);
+title('Resting Potential');
+xlabel('ms');
+ylabel('mV');
+
+
+
+
 
