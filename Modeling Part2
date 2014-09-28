@@ -52,9 +52,10 @@ Vm=Vm-70;
 
 
 plot(t,Vm);
-title('Resting Potential Part 2');
+hold on
+title('Membrane Potential Part 2');
 xlabel('ms');
-ylabel('mV');
+ylabel('Voltage(mV)');
 
 figure
 gNa=plot(t,Gna.*(m.^4).*h);
