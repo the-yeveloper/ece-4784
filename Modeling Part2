@@ -1,0 +1,66 @@
+%Evgeniy Vinogradov Part2
+
+Gk=36;%ms/cm2
+Gna=120;%ms/cm2
+Gl=.3;%ms/cm2
+Ek=-12;%mV
+Ena=115;%mV
+El=10.6;%mV
+Vrest=-70;%mV
+Cm=1;
+
+Vm=0;
+v=[];
+h=.01;
+
+
+t=0:.01:100;
+I(1:length(t))=0;%Injection current intervals
+I(1:500)=5;%Injected current for 5 ms, since step i use is .01 then 5/.01=500
+
+for i=1:length(t)-1
+    Alpham=.1*((25-Vm(i))/(exp((25-Vm(i))/10)-1));
+    Betam=4*exp(-Vm(i)/18);
+    Alphan=.01*((10-Vm(i))/(exp((10-Vm(i))/10)-1));
+    Betan=.125*exp(-Vm(i)/80);
+    Alphah=.07*exp(-Vm(i)/20);
+    Betah=1/(exp((30-Vm(i))/10)+1);
+    if i==1
+        m(i)=(Alpham)/(Alpham+Betam);
+        n(i)=(Alphan)/(Alphan+Betan);
+        h(i)=(Alphah)/(Alphah+Betah);
+    end
+    Ina=m(i)^(3)*Gna*h(i)*(Vm(i)-Ena);
+    Ik=n(i)^(4)*Gk*(Vm(i)-Ek);
+    Il=Gl*(Vm(i)-El);
+    Iion=I(i)-Ik-Ina-Il;
+    dVm=Iion/Cm;
+    sprintf('dvm %d',dVm);
+    dm=Alpham*(1-m(i))-Betam*m(i);
+    dn=Alphan*(1-n(i))-Betan*n(i);
+    dh=Alphah*(1-h(i))-Betah*h(i);
+    a=Vm(i);
+    Vm(i+1)=a+.01*dVm;
+    m(i+1)=m(i)+.01*dm;
+    n(i+1)=n(i)+.01*dn;
+    h(i+1)=h(i)+.01*dh;
+    
+end
+     
+Vm=Vm-70;    
+
+
+
+plot(t,Vm);
+title('Resting Potential Part 2');
+xlabel('ms');
+ylabel('mV');
+
+figure
+gNa=plot(t,Gna.*(m.^4).*h);
+hold on
+gK=plot(t,Gk.*(n.^3),'r');
+legend([gNa, gK],'Sodium','Potassium')
+ylabel('mS/(cm^2)')
+xlabel('ms')
+title('Conductances Part 2')
