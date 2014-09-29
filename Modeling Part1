@@ -1,5 +1,5 @@
 %Evgeniy Vinogradov Part1
-
+%Constants
 Gk=36;%ms/cm2
 Gna=120;%ms/cm2
 Gl=.3;%ms/cm2
@@ -9,60 +9,59 @@ El=10.6;%mV
 Vrest=-70;%mV
 Cm=1;
 
-Vm=0;
+Vm=0;%suggested on piazza
 v=[];
 
-I=0;%no current so I made current zero everywhere
-m=[];
+t=0:.005:100;%number of steps
+I(1:length(t))=0;%Injection current at each inteval for this part is 5
+m=[];%initializing arrays
 n=[];
 h=[];
-t=0:.01:100;
-for i=1:length(t)-1
+for i=1:length(t)-1%loop over number of steps
     Alpham=.1*((25-Vm(i))/(exp((25-Vm(i))/10)-1));
     Betam=4*exp(-Vm(i)/18);
     Alphan=.01*((10-Vm(i))/(exp((10-Vm(i))/10)-1));
     Betan=.125*exp(-Vm(i)/80);
     Alphah=.07*exp(-Vm(i)/20);
     Betah=1/(exp((30-Vm(i))/10)+1);
-    if i==1
+    if i==1%initial values 
         m(i)=(Alpham)/(Alpham+Betam);
         n(i)=(Alphan)/(Alphan+Betan);
         h(i)=(Alphah)/(Alphah+Betah);
     end
-    Ina=m(i)^(3)*Gna*h(i)*(Vm(i)-Ena);
+    Ina=m(i)^(3)*Gna*h(i)*(Vm(i)-Ena);%calculating all currents
     Ik=n(i)^(4)*Gk*(Vm(i)-Ek);
     Il=Gl*(Vm(i)-El);
-    Iion=I-Ik-Ina-Il;
-    dVm=Iion/Cm;
-    sprintf('dvm %d',dVm);
+    Iion=I(i)-Ik-Ina-Il;
+    dVm=Iion/Cm;%calculating differentials
     dm=Alpham*(1-m(i))-Betam*m(i);
     dn=Alphan*(1-n(i))-Betan*n(i);
     dh=Alphah*(1-h(i))-Betah*h(i);
     a=Vm(i);
-    Vm(i+1)=a+.01*dVm;
-    m(i+1)=m(i)+.01*dm;
-   
-    n(i+1)=n(i)+.01*dn;
-    h(i+1)=h(i)+.01*dh;
+    Vm(i+1)=a+.005*dVm;%calculating next values using Euler
+    m(i+1)=m(i)+.005*dm;
+    n(i+1)=n(i)+.005*dn;
+    h(i+1)=h(i)+.005*dh;
     
 end
-Vm=Vm-70;    
+     
+Vm=Vm-70;%suggested on piazza, to simplify things   
 
 
-plot(t,Vm);
+%Ploting
+v=plot(t,Vm);
 hold on
 title('Membrane Potential Part 1');
+legend(v,'Voltage')
 xlabel('ms');
 ylabel('Voltage(mV)');
+
 
 figure
 gNa=plot(t,Gna.*(m.^4).*h);
 hold on
 gK=plot(t,Gk.*(n.^3),'r');
-legend([gNa, gK],'Sodium','Potassium')
+legend([gNa, gK],'gK','gNa')
 ylabel('mS/(cm^2)')
 xlabel('ms')
 title('Conductances Part 1')
-
-
-
